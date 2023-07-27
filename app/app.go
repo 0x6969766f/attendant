@@ -5,10 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/0x6969766f/attendant/api/router"
 	"github.com/0x6969766f/attendant/config"
 	"github.com/0x6969766f/attendant/database"
 	"github.com/0x6969766f/attendant/migrations"
-	"github.com/0x6969766f/attendant/router"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -27,7 +27,7 @@ func Run(config config.Config) error {
 	}
 
 	// setup routes
-	r := router.Setup()
+	r := router.New()
 	if err := chi.Walk(r, walk); err != nil {
 		log.Panicf("Logging err: %s\n", err.Error()) // panic if there is an error
 	}
