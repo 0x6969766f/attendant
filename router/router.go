@@ -2,17 +2,12 @@ package router
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 )
-
-type APIError struct {
-	Error string
-}
 
 func Setup() *chi.Mux {
 	router := chi.NewRouter()
@@ -32,17 +27,11 @@ func Setup() *chi.Mux {
 	return router
 }
 
-func MapRoutes(
-	method string,
-	route string,
-	handler http.Handler,
-	middlewares ...func(http.Handler) http.Handler,
-) error {
-	log.Printf("%s %s\n", method, route) // Walk and print out all routes
-	return nil
-}
-
 type apiHandler func(http.ResponseWriter, *http.Request) error
+
+type APIError struct {
+	Error string
+}
 
 func handleRoute(f apiHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

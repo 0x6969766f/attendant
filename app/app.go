@@ -28,11 +28,20 @@ func Run(config config.Config) error {
 
 	// setup routes
 	r := router.Setup()
-	if err := chi.Walk(r, router.MapRoutes); err != nil {
+	if err := chi.Walk(r, walk); err != nil {
 		log.Panicf("Logging err: %s\n", err.Error()) // panic if there is an error
 	}
 
 	// start server
 	fmt.Println("Server started on port", config.Server.Address)
 	return http.ListenAndServe(config.Server.Address, r)
+}
+
+func walk(
+	method, route string,
+	handler http.Handler,
+	middlewares ...func(http.Handler) http.Handler,
+) error {
+	log.Printf("%s %s\n", method, route) // Walk and print out all routes
+	return nil
 }
