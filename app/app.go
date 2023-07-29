@@ -27,9 +27,9 @@ func Run(config config.Config) error {
 	}
 
 	// setup routes
-	r := router.New()
+	r := router.New(db)
 	if err := chi.Walk(r, walk); err != nil {
-		log.Panicf("Logging err: %s\n", err.Error()) // panic if there is an error
+		log.Panicf("Logging err: %s\n", err.Error())
 	}
 
 	// start server

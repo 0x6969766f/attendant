@@ -9,10 +9,10 @@ build:
 run: build
 	@./bin/${APP_NAME}
 
-dev:
+up:
 	@docker compose -f ${COMPOSE} -f ${COMPOSE_OVERRIDE} up --build
 
-kill:
+down:
 	@docker compose -f ${COMPOSE} -f ${COMPOSE_OVERRIDE} down --remove-orphans
 
 test:
