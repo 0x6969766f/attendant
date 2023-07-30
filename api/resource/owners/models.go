@@ -47,18 +47,15 @@ func (a *API) GetOwner(id int) (*Owner, error) {
 }
 
 func (a *API) CreateOwner(name string) (*Owner, error) {
-	o := Owner{
-		Name: name,
-	}
+	o := Owner{}
 
 	row := a.Database.QueryRow(`
-		INSERT INTO owners (name)
-		VALUES ($1)
-		RETURNING id`,
-		o.Name,
+		INSERT INTO owners (name) VALUES ($1)
+		RETURNING id, name`,
+		name,
 	)
 
-	err := row.Scan(&o.ID)
+	err := row.Scan(&o.ID, &o.Name)
 	if err != nil {
 		return nil, fmt.Errorf("create owner: %w", err)
 	}
@@ -67,18 +64,15 @@ func (a *API) CreateOwner(name string) (*Owner, error) {
 }
 
 func (a *API) UpdateOwner(id int, name string) (*Owner, error) {
-	o := Owner{
-		Name: name,
-	}
+	o := Owner{}
+
 	row := a.Database.QueryRow(`
-		UPDATE owners
-		SET name = $2
+		UPDATE owners SET name = $2
 		WHERE id = $1
-		RETURNING id`,
-		id,
-		o.Name,
+		RETURNING id, name`,
+		id, name,
 	)
-	err := row.Scan(&o.ID)
+	err := row.Scan(&o.ID, &o.Name)
 	if err != nil {
 		return nil, fmt.Errorf("update owner: %w", err)
 	}

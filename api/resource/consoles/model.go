@@ -50,20 +50,16 @@ func (a *API) GetConsole(id int) (*Console, error) {
 }
 
 func (a *API) CreateConsole(brand, model string) (*Console, error) {
-	c := Console{
-		Brand: brand,
-		Model: model,
-	}
+	c := Console{}
 
 	row := a.Database.QueryRow(`
 		INSERT INTO consoles (brand, model)
 		VALUES ($1, $2)
-		RETURNING id`,
-		c.Brand,
-		c.Model,
+		RETURNING id, brand, model`,
+		brand, model,
 	)
 
-	err := row.Scan(&c.ID)
+	err := row.Scan(&c.ID, &c.Brand, &c.Model)
 	if err != nil {
 		return nil, fmt.Errorf("create console: %w", err)
 	}
@@ -74,22 +70,20 @@ func (a *API) CreateConsole(brand, model string) (*Console, error) {
 func (a *API) UpdateConsole(id int, brand, model string) (*Console, error) {
 	c := Console{}
 
-	var brandPtr, modelPtr *string
+	var b, m *string
 	if brand != "" {
-		brandPtr = &brand
+		b = &brand
 	}
 	if model != "" {
-		modelPtr = &model
+		m = &model
 	}
 
 	row := a.Database.QueryRow(`
-        UPDATE consoles
-        SET brand = COALESCE($2, brand), model = COALESCE($3, model)
-        WHERE id = $1
-        RETURNING id, brand, model`,
-		id,
-		brandPtr,
-		modelPtr,
+		UPDATE consoles
+		SET brand = COALESCE($2, brand), model = COALESCE($3, model)
+		WHERE id = $1
+		RETURNING id, brand, model`,
+		id, b, m,
 	)
 	err := row.Scan(&c.ID, &c.Brand, &c.Model)
 	if err != nil {
