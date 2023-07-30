@@ -70,7 +70,6 @@ func (a *API) GetGames() ([]*Game, error) {
 
 func (a *API) GetGame(id int) (*Game, error) {
 	g := Game{}
-	fmt.Println("here", id)
 	row := a.Database.QueryRow(`
 		SELECT
 			games.id, games.name, games.link, games.image,
@@ -122,8 +121,6 @@ func (a *API) CreateGame(
 		return nil, fmt.Errorf("create game: %w", err)
 	}
 
-	fmt.Println("here", g.ID)
-
 	game, err := a.GetGame(g.ID)
 	if err != nil {
 		return nil, fmt.Errorf("create game: %w", err)
@@ -138,9 +135,9 @@ func (a *API) UpdateGame(
 ) (*Game, error) {
 	g := Game{}
 
-	// Convert ownerID and consoleID to int values if they are not empty strings
-	var ownerIDInt, consoleIDInt *int
 	var err error
+	var ownerIDInt, consoleIDInt *int
+
 	if ownerID != "" {
 		ownerIDIntVal, err := strconv.Atoi(ownerID)
 		if err != nil {
@@ -148,6 +145,7 @@ func (a *API) UpdateGame(
 		}
 		ownerIDInt = &ownerIDIntVal
 	}
+
 	if consoleID != "" {
 		consoleIDIntVal, err := strconv.Atoi(consoleID)
 		if err != nil {
@@ -157,14 +155,15 @@ func (a *API) UpdateGame(
 	}
 
 	row := a.Database.QueryRow(`
-        UPDATE games
-        SET name = COALESCE(NULLIF($2, ''), name),
-            link = COALESCE(NULLIF($3, ''), link),
-            image = COALESCE(NULLIF($4, ''), image),
-            owner_id = COALESCE($5, owner_id),
-            console_id = COALESCE($6, console_id)
-        WHERE id = $1
-        RETURNING id`,
+		UPDATE games
+		SET
+			name = COALESCE(NULLIF($2, ''), name),
+			link = COALESCE(NULLIF($3, ''), link),
+			image = COALESCE(NULLIF($4, ''), image),
+			owner_id = COALESCE($5, owner_id),
+			console_id = COALESCE($6, console_id)
+		WHERE id = $1
+		RETURNING id`,
 		id,
 		name,
 		link,
